@@ -1,0 +1,68 @@
+CREATE TABLE User(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserName VARCHAR(40) NOT NULL UNIQUE,
+    FirstName VARCHAR(40) NOT NULL,
+    LastName VARCHAR(40) NOT NULL,
+	Company VARCHAR(60) DEFAULT NULL, //company/organization
+	Email VARCHAR(40) NOT NULL,
+    Location VARCHAR(40) NOT NULL,
+    Img CHAR(10000) DEFAULT NULL, //base64 encoded - encoded using ascii characters //profile image
+	AccessLevel INTEGER DEFAULT 0 NOT NULL //this is increased to 1 by default when an email has been verifyed, otherwise is manually altered by admin or organization
+	//this decides the accessability a user has
+
+CREATE TABLE Project(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT, //possibly change Id to 0 when 
+	UserId INTEGER NOT NULL, //possibly change Id to 0 when even is removed by the user or the account is delete to keep the project on record except in the case of drafts
+	Title VARCHAR(40) NOT NULL,
+    Description VARCHAR(12500) NOT NULL,
+	Qualifiers VARCHAR(12500) NOT NULL,
+	Level VARCHAR(40) DEFAULT 'BEGINNER' NOT NULL, //level of proficiency needed
+	Capacity INTEGER NOT NULL, //Max capacity of people that are able to be apart of the project
+	Region VARCHAR(12500) NOT NULL, // ex: Austin,TX
+	Location VARCHAR(12500) NOT NULL, // address line 1 and 2
+	Remote INTEGER DEFAULT 0 NOT NULL,
+    DateCreated DATETIME DEFAULT(datetime('now')),
+	StartDate DATETIME DEFAULT(datetime('now')),
+	Status INTEGER DEFAULT 0 NOT NULL, //is draft, inactive (viewable), active
+	Access VARCHAR(40) DEFAULT 'PUBLIC' NOT NULL, //public, viewable(publically shown but details are hidden), private(can only be seen upon invite)
+	EnableComments INTEGER DEFAULT 0 NOT NULL,
+	FOREIGN KEY(UserID) REFERENCES Users(ID) ON DELETE CASCADE
+)
+
+CREATE TABLE Article(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT, //possibly change Id to 0 when 
+	UserId INTEGER NOT NULL, //possibly change Id to 0 when even is removed by the user or the account is delete to keep the project on record except in the case of drafts
+	Title VARCHAR(40) NOT NULL,
+    Content VARCHAR(12500) NOT NULL,
+    DateCreated DATETIME DEFAULT(datetime('now')),
+	StartDate DATETIME DEFAULT(datetime('now')),
+	Status INTEGER DEFAULT 0 NOT NULL, //is draft, inactive (viewable), pending, active
+	EnableComments INTEGER DEFAULT 0 NOT NULL,
+	FOREIGN KEY(UserID) REFERENCES Users(ID) ON DELETE CASCADE
+)
+
+CREATE TABLE Comment(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Message VARCHAR(1000) NOT NULL,
+	UserId INTEGER NOT NULL,
+	ProjectId INTEGER DEFAULT NULL,
+	ArticleId INTEGER DEFAULT NULL,
+	IsDraft INTEGER DEFAULT 0 NOT NULL,
+	DateCreated DATETIME DEFAULT(datetime('now')),
+	ReportCount INTEGER DEFAULT 0 NOT NULL,
+    FOREIGN KEY(UserId) REFERENCES Users(Id) ON DELETE CASCADE,
+    FOREIGN KEY(ProjectId) REFERENCES Projects(Id) ON DELETE CASCADE
+	FOREIGN KEY(ArticleId) REFERENCES Articles(Id) ON DELETE CASCADE
+)
+
+CREATE TABLE Report(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+	UserId INTEGER NOT NULL,
+	ProjectId INTEGER NOT NULL,
+	CommentId INTEGER NOT NULL,
+	DateCreated DATETIME DEFAULT(datetime('now')),
+	Message VARCHAR(12500) NOT NULL,
+    FOREIGN KEY(UserId) REFERENCES Users(Id) ON DELETE CASCADE,
+    FOREIGN KEY(ProjectId) REFERENCES Projects(Id) ON DELETE CASCADE,
+	FOREIGN KEY(CommentId) REFERENCES Projects(Comments) ON DELETE CASCADE
+)

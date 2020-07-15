@@ -1,0 +1,21 @@
+dependencies:
+
+dotnet add package Microsoft.EntityFrameworkCore.Tools
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design
+dotnet tool install --global dotnet-aspnet-codegenerator
+
+generate models:
+
+dotnet ef dbcontext scaffold "Data Source=source/data.db" Microsoft.EntityFrameworkCore.Sqlite -c ApplicationDbContext -f -o Models
+dotnet ef dbcontext scaffold "Data Source=source/user.db" Microsoft.EntityFrameworkCore.Sqlite -c ApplicationUserDb -f -o Models
+
+generate controllers from models:
+
+dotnet aspnet-codegenerator controller -name UsersController -m Users -dc ApplicationDbContext --relativeFolderPath Controllers --useDefaultLayout --referenceScriptLibraries
+
+//add migrations
+dotnet restore
+dotnet ef migrations add InitialMigration
+dotnet ef database update
