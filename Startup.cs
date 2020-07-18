@@ -27,9 +27,11 @@ namespace collabnetwork_.net_c_
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    "Data Source=data.db;foreign keys=true"));
+            services.AddRouting(r => r.SuppressCheckForUnhandledSecurityMetadata = true);
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
@@ -42,6 +44,7 @@ namespace collabnetwork_.net_c_
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                //app.UseExceptionHandler("/error");
                 app.UseDatabaseErrorPage();
             }
             else

@@ -11,6 +11,8 @@ generate models:
 dotnet ef dbcontext scaffold "Data Source=source/data.db" Microsoft.EntityFrameworkCore.Sqlite -c ApplicationDbContext -f -o Models
 dotnet ef dbcontext scaffold "Data Source=source/user.db" Microsoft.EntityFrameworkCore.Sqlite -c ApplicationUserDb -f -o Models
 
+If models need to be regenerated make sure to run the application first before doing so otherwise you'll get a "Build Failed" error
+
 generate controllers from models:
 
 dotnet aspnet-codegenerator controller -name UsersController -m Users -dc ApplicationDbContext --relativeFolderPath Controllers --useDefaultLayout --referenceScriptLibraries

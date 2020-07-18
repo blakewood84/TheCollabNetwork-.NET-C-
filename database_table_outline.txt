@@ -7,6 +7,7 @@ CREATE TABLE User(
 	Email VARCHAR(40) NOT NULL,
     Location VARCHAR(40) NOT NULL,
     Img CHAR(10000) DEFAULT NULL, //base64 encoded - encoded using ascii characters //profile image
+	DateCreated DATETIME NOT NULL, //used for password hashing
 	AccessLevel INTEGER DEFAULT 0 NOT NULL //this is increased to 1 by default when an email has been verifyed, otherwise is manually altered by admin or organization
 	//this decides the accessability a user has
 

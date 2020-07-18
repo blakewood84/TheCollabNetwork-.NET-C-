@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace collabnetwork_.net_c_.Models
 {
-    public partial class Articles
+    public partial class Article
     {
-        public Articles()
+        public Article()
         {
-            Comments = new HashSet<Comments>();
+            ArticleComments = new HashSet<ArticleComment>();
         }
 
         public long Id { get; set; }
@@ -18,7 +18,7 @@ namespace collabnetwork_.net_c_.Models
         public long StatusValue { get; set; }
         public long EnableComments { get; set; }
 
-        public virtual Users User { get; set; }
-        public virtual ICollection<Comments> Comments { get; set; }
+        public virtual User User { get; set; }
+        public virtual ICollection<ArticleComment> ArticleComments { get; set; }
     }
 }

@@ -15,11 +15,12 @@ namespace collabnetwork_.net_c_.Models
         {
         }
 
-        public virtual DbSet<Articles> Articles { get; set; }
-        public virtual DbSet<Comments> Comments { get; set; }
-        public virtual DbSet<Projects> Projects { get; set; }
-        public virtual DbSet<Reports> Reports { get; set; }
-        public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<ArticleComment> ArticleComment { get; set; }
+        public virtual DbSet<Article> Article { get; set; }
+        public virtual DbSet<ProjectComment> ProjectComment { get; set; }
+        public virtual DbSet<Project> Project { get; set; }
+        public virtual DbSet<Report> Report { get; set; }
+        public virtual DbSet<User> User { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -32,7 +33,29 @@ namespace collabnetwork_.net_c_.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Articles>(entity =>
+            modelBuilder.Entity<ArticleComment>(entity =>
+            {
+                entity.Property(e => e.Id);
+
+                entity.Property(e => e.DateCreated)
+                    .HasColumnType("DATETIME")
+                    .HasDefaultValueSql("datetime('now')");
+
+                entity.Property(e => e.Message)
+                    .IsRequired()
+                    .HasColumnType("VARCHAR(1000)");
+
+                entity.HasOne(d => d.Article)
+                    .WithMany(p => p.ArticleComments)
+                    .HasForeignKey(d => d.ArticleId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.ArticleComments)
+                    .HasForeignKey(d => d.UserId);
+            });
+
+            modelBuilder.Entity<Article>(entity =>
             {
                 entity.Property(e => e.Id);
 
@@ -53,7 +76,7 @@ namespace collabnetwork_.net_c_.Models
                     .HasForeignKey(d => d.UserId);
             });
 
-            modelBuilder.Entity<Comments>(entity =>
+            modelBuilder.Entity<ProjectComment>(entity =>
             {
                 entity.Property(e => e.Id);
 
@@ -65,22 +88,17 @@ namespace collabnetwork_.net_c_.Models
                     .IsRequired()
                     .HasColumnType("VARCHAR(1000)");
 
-                entity.HasOne(d => d.Article)
-                    .WithMany(p => p.Comments)
-                    .HasForeignKey(d => d.ArticleId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
                 entity.HasOne(d => d.Project)
-                    .WithMany(p => p.Comments)
+                    .WithMany(p => p.ProjectComments)
                     .HasForeignKey(d => d.ProjectId)
                     .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.Comments)
+                    .WithMany(p => p.ProjectComments)
                     .HasForeignKey(d => d.UserId);
             });
 
-            modelBuilder.Entity<Projects>(entity =>
+            modelBuilder.Entity<Project>(entity =>
             {
                 entity.Property(e => e.Id);
 
@@ -114,7 +132,7 @@ namespace collabnetwork_.net_c_.Models
                 entity.Property(e => e.SkillLevel)
                     .IsRequired()
                     .HasColumnType("VARCHAR(40)")
-                    .HasDefaultValueSql("BEGINNER");
+                    .HasDefaultValueSql("'BEGINNER'");
 
                 entity.Property(e => e.StartDate)
                     .HasColumnType("DATETIME")
@@ -129,7 +147,7 @@ namespace collabnetwork_.net_c_.Models
                     .HasForeignKey(d => d.UserId);
             });
 
-            modelBuilder.Entity<Reports>(entity =>
+            modelBuilder.Entity<Report>(entity =>
             {
                 entity.Property(e => e.Id);
 
@@ -141,21 +159,16 @@ namespace collabnetwork_.net_c_.Models
                     .IsRequired()
                     .HasColumnType("VARCHAR(12500)");
 
-                entity.HasOne(d => d.Project)
-                    .WithMany(p => p.Reports)
-                    .HasForeignKey(d => d.ProjectId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
                 entity.HasOne(d => d.Reporter)
-                    .WithMany(p => p.ReportsReporter)
+                    .WithMany(p => p.Reporters)
                     .HasForeignKey(d => d.ReporterId);
 
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.ReportsUser)
+                    .WithMany(p => p.ReportedUsers)
                     .HasForeignKey(d => d.UserId);
             });
 
-            modelBuilder.Entity<Users>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
                 entity.HasIndex(e => e.UserName)
                     .IsUnique();
@@ -163,6 +176,10 @@ namespace collabnetwork_.net_c_.Models
                 entity.Property(e => e.Id);
 
                 entity.Property(e => e.Company).HasColumnType("VARCHAR(60)");
+
+                entity.Property(e => e.DateCreated)
+                    .IsRequired()
+                    .HasColumnType("DATETIME");
 
                 entity.Property(e => e.Email)
                     .IsRequired()

@@ -26,45 +26,51 @@ namespace collaby_backend.Controllers
             _context = context;
         }
 
-        [HttpGet] //get all projects
-        public ActionResult<IEnumerable<Projects>> project()
+        [HttpGet("test")]
+        public ActionResult<String> Test()
         {
-            List<Projects> projectList = new List<Projects>();
-            projectList = _context.Projects.Where(o=>o.Status <= 1).ToList();
+            return "testString";
+        }
+
+        [HttpGet] //get all projects
+        public ActionResult<IEnumerable<Project>> project()
+        {
+            List<Project> projectList = new List<Project>();
+            projectList = _context.Project.Where(o=>o.Status <= 1).ToList();
             return projectList;
         }
 
         [HttpGet("user/{username}")] //get projects from sepecific user
-        public ActionResult<IEnumerable<Projects>> GetUserprojects(string username)
+        public ActionResult<IEnumerable<Project>> GetUserprojects(string username)
         {
-            List<Projects> projectList = new List<Projects>();
+            List<Project> projectList = new List<Project>();
 
-            long userId = _context.Users.First(o => o.UserName == username).Id;
-            projectList = _context.Projects.Where(o => o.UserId == userId && o.Status <= 1).OrderByDescending(o => o.DateCreated).ToList();
+            long userId = _context.User.First(o => o.UserName == username).Id;
+            projectList = _context.Project.Where(o => o.UserId == userId && o.Status <= 1).OrderByDescending(o => o.DateCreated).ToList();
 
             return projectList;
         }
 
         // GET api/projects/single/
         [HttpGet("project/{projectId}")] //get specific project
-        public ActionResult<Projects> Getproject(long projectId)
+        public ActionResult<Project> Getproject(long projectId)
         {
-            Projects project = _context.Projects.First(o => o.Id == projectId);
+            Project project = _context.Project.First(o => o.Id == projectId);
             return project;
         }
 
         [HttpGet("drafts")]
-        public ActionResult<IEnumerable<Projects>> GetDrafts(long projectId)
+        public ActionResult<IEnumerable<Project>> GetDrafts(long projectId)
         {
-            List<Projects> projectList = new List<Projects>();
-            projectList = _context.Projects.Where(o => o.Status == 0).OrderByDescending(o => o.Id).ToList();
+            List<Project> projectList = new List<Project>();
+            projectList = _context.Project.Where(o => o.Status == 0).OrderByDescending(o => o.Id).ToList();
             return projectList;
         }
 
         [HttpGet("draft/{draftId}")]
-        public ActionResult<Projects> GetDraft(long draftId)
+        public ActionResult<Project> GetDraft(long draftId)
         {
-            Projects project = _context.Projects.First(o => o.Id == draftId);
+            Project project = _context.Project.First(o => o.Id == draftId);
             /*if (GetUserId() != project.UserId)
             {
                 return StatusCode(401);
@@ -73,7 +79,7 @@ namespace collaby_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<Object> project([FromBody]Projects project)
+        public async Task<Object> project([FromBody]Project project)
         {
 
             if(project.Status == 0){
@@ -87,16 +93,16 @@ namespace collaby_backend.Controllers
             }
             project.UserId = userId;*/
 
-            _context.Projects.Add(project);
+            _context.Project.Add(project);
             await _context.SaveChangesAsync();
             return Ok(new { response = "Record has been successfully added" });
         }
 
         [HttpPut]
-        public async Task<Object> Edit([FromBody]Projects project)
+        public async Task<Object> Edit([FromBody]Project project)
         {
 
-            Projects currentproject = _context.Projects.First(o => o.Id == project.Id);
+            Project currentproject = _context.Project.First(o => o.Id == project.Id);
 
             /*if (currentproject.UserId != GetUserId())
             {
@@ -120,9 +126,9 @@ namespace collaby_backend.Controllers
         [HttpDelete("{projectId}")]
         public async Task<Object> Delete([FromRoute]long projectId)
         {   
-            Projects project = _context.Projects.First(o=>o.Id == projectId);
+            Project project = _context.Project.First(o=>o.Id == projectId);
 
-            _context.Projects.Remove(project);
+            _context.Project.Remove(project);
             await _context.SaveChangesAsync();
 
             return Ok(new { response = "Project has been successfully deleted" });
